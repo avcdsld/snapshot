@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; }
+canvas { border: 1px solid black; display: block; width: 100%; height: 100%; }
+#popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 0; box-shadow: 0 0 8px gray; font-size: 0.8em; }
+</style>
+</head>
+<body>
+<canvas id="viewerCanvas"></canvas>
+<div id="popup"></div>
+<script>
+const canvas = document.getElementById("viewerCanvas");
+const ctx = canvas.getContext("2d");
+const popup = document.getElementById("popup");
+let isAnimating = true;
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+function escapeHtml(unsafe) {
+    return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function decodeBase64(base64) {
+    try {
+        const binary = atob(base64);
+        let bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return new TextDecoder().decode(bytes);
+    } catch (e) {
+        console.error(e);
+        return "";
+    }
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+const ownerAddress = "0xf8d6e0586b0a20c7"
+const snapshotTime = Number((1695649515.00000000 | 0) * 1000)
+const data = [
+    {
+        nftID: 5,
+        name: decodeBase64("VGVzdCBORlQgIzU"),
+        collectionPublicPath: "/public/MomentCollection",
+        nftType: "A.f8d6e0586b0a20c7.TopShot.NFT",
+        thumbnail: decodeBase64("aHR0cHM6Ly9hc3NldHMubGFsaWdhZ29sYXpvcy5jb20vZWRpdGlvbnMvZzE4NjI3XzczMTdfcmVjVldVaVFVQjN3N3VmUXAvcGxheV9nMTg2MjdfNzMxN19yZWNWV1VpUVVCM3c3dWZRcF9fY2FwdHVyZV9IZXJvX0JsYWNrXzI4ODBfMjg4MF9kZWZhdWx0LnBuZw").replace("ipfs://", "https://dweb.link/ipfs/"),
+    },
+    {
+        nftID: 3,
+        name: decodeBase64("VGVzdCBORlQgIzM"),
+        collectionPublicPath: "/public/MomentCollection",
+        nftType: "A.f8d6e0586b0a20c7.TopShot.NFT",
+        thumbnail: decodeBase64("aHR0cHM6Ly9hc3NldHMubGFsaWdhZ29sYXpvcy5jb20vZWRpdGlvbnMvZzE4NjI3XzczMTdfcmVjVldVaVFVQjN3N3VmUXAvcGxheV9nMTg2MjdfNzMxN19yZWNWV1VpUVVCM3c3dWZRcF9fY2FwdHVyZV9IZXJvX0JsYWNrXzI4ODBfMjg4MF9kZWZhdWx0LnBuZw").replace("ipfs://", "https://dweb.link/ipfs/"),
+    },
+    {
+        nftID: 1,
+        name: decodeBase64("VGVzdCBORlQgIzE"),
+        collectionPublicPath: "/public/MomentCollection",
+        nftType: "A.f8d6e0586b0a20c7.TopShot.NFT",
+        thumbnail: decodeBase64("aHR0cHM6Ly9hc3NldHMubGFsaWdhZ29sYXpvcy5jb20vZWRpdGlvbnMvZzE4NjI3XzczMTdfcmVjVldVaVFVQjN3N3VmUXAvcGxheV9nMTg2MjdfNzMxN19yZWNWV1VpUVVCM3c3dWZRcF9fY2FwdHVyZV9IZXJvX0JsYWNrXzI4ODBfMjg4MF9kZWZhdWx0LnBuZw").replace("ipfs://", "https://dweb.link/ipfs/"),
+    },
+    {
+        nftID: 4,
+        name: decodeBase64("VGVzdCBORlQgIzQ"),
+        collectionPublicPath: "/public/MomentCollection",
+        nftType: "A.f8d6e0586b0a20c7.TopShot.NFT",
+        thumbnail: decodeBase64("aHR0cHM6Ly9hc3NldHMubGFsaWdhZ29sYXpvcy5jb20vZWRpdGlvbnMvZzE4NjI3XzczMTdfcmVjVldVaVFVQjN3N3VmUXAvcGxheV9nMTg2MjdfNzMxN19yZWNWV1VpUVVCM3c3dWZRcF9fY2FwdHVyZV9IZXJvX0JsYWNrXzI4ODBfMjg4MF9kZWZhdWx0LnBuZw").replace("ipfs://", "https://dweb.link/ipfs/"),
+    },
+    {
+        nftID: 2,
+        name: decodeBase64("VGVzdCBORlQgIzI"),
+        collectionPublicPath: "/public/MomentCollection",
+        nftType: "A.f8d6e0586b0a20c7.TopShot.NFT",
+        thumbnail: decodeBase64("aHR0cHM6Ly9hc3NldHMubGFsaWdhZ29sYXpvcy5jb20vZWRpdGlvbnMvZzE4NjI3XzczMTdfcmVjVldVaVFVQjN3N3VmUXAvcGxheV9nMTg2MjdfNzMxN19yZWNWV1VpUVVCM3c3dWZRcF9fY2FwdHVyZV9IZXJvX0JsYWNrXzI4ODBfMjg4MF9kZWZhdWx0LnBuZw").replace("ipfs://", "https://dweb.link/ipfs/"),
+    },
+];
+
+data.map(info => {
+    const angle = Math.random() * 2 * Math.PI;
+    info.x = Math.random() * canvas.width;
+    info.y = Math.random() * canvas.height;
+    info.dx = Math.cos(angle) * 0.2;
+    info.dy = Math.sin(angle) * 0.2;
+    info.width = canvas.width * 0.08,
+    info.height = null,
+    info.image = null
+});
+
+let loadedImages = 0;
+
+data.forEach(item => {
+    const img = new Image();
+    img.onload = function() {
+        loadedImages++;
+        item.image = img;
+        item.height = img.height * (item.width / img.width);
+        if (loadedImages === data.length) {
+            requestAnimationFrame(draw);
+        }
+    }
+    img.onerror = function() {
+        loadedImages++;
+        if (loadedImages === data.length) {
+            requestAnimationFrame(draw);
+        }
+    }
+    img.src = item.thumbnail;
+});
+
+canvas.addEventListener("click", function(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    let clickedItem = null;
+    for (const item of data) {
+        if (x > item.x - item.width/2 && x < item.x + item.width/2 &&
+            y > item.y - item.height/2 && y < item.y + item.height/2) {
+            clickedItem = item;
+            break;
+        }
+    }
+
+    if (clickedItem) {
+        isAnimating = false;
+        let imageHtml = "";
+        if (clickedItem.image) {
+            imageHtml = `<img src="${clickedItem.thumbnail}" width="${clickedItem.width * 3}" height="${clickedItem.height * 3}" style="display:block; margin:auto;">`;
+        }
+        popup.innerHTML = imageHtml +
+                        "<p>Name: " + escapeHtml(clickedItem.name) + "</p>" + 
+                        "<p>PublicPath: " + clickedItem.collectionPublicPath + "</p>" +
+                        "<p>Type: " + escapeHtml(clickedItem.nftType) + "</p>" +
+                        "<p>ID: " + clickedItem.nftID + "</p>" +
+                        "<p>Owner: " + ownerAddress + "</p>" +
+                        "<p>Time: " + new Date(snapshotTime).toLocaleString() + "</p>";
+        popup.style.display = "block";
+    } else {
+        isAnimating = true;
+        popup.style.display = "none";
+        requestAnimationFrame(draw);
+    }
+});
+
+function draw() {
+    if (!isAnimating) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    data.forEach(item => {
+        item.x += item.dx;
+        item.y += item.dy;
+
+        if (item.x - item.width/2 > canvas.width) item.x = -item.width/2;
+        if (item.x + item.width/2 < 0) item.x = canvas.width + item.width/2;
+        if (item.y - item.height/2 > canvas.height) item.y = -item.height/2;
+        if (item.y + item.height/2 < 0) item.y = canvas.height + item.height/2;
+
+        if (item.image) {
+            ctx.drawImage(item.image, 0, 0, item.image.width, item.image.height, item.x - item.width/2, item.y - item.height/2, item.width, item.height);
+        } else {
+            item.height = item.width;
+            ctx.fillStyle = "#ddd";
+            ctx.fillRect(item.x - item.width/2, item.y - item.height/2, item.width, item.height);
+
+            ctx.fillStyle = "#999";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("NFT", item.x, item.y);
+        }
+
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText(item.name, item.x, item.y + item.height/2 + 15);
+    });
+
+    requestAnimationFrame(draw);
+}
+</script>
+</body>
+</html>

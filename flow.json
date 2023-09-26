@@ -1,0 +1,35 @@
+{
+	"contracts": {
+		"Snapshot": "cadence/contracts/Snapshot.cdc",
+		"SnapshotLogic": "cadence/contracts/SnapshotLogic.cdc",
+		"SnapshotViewer": "cadence/contracts/SnapshotViewer.cdc",
+		"Base64Util": "cadence/contracts/utils/Base64Util.cdc",
+		"TopShot": "cadence/contracts/tests/TopShot.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"default": {
+			"address": "e03daebed8ca0615",
+			"key": "a2a55fa6ba1e82624be27d19d0c5b1e6736261cfe08e6d55e10941864da97707"
+		},
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"emulator-account": [
+				"Snapshot",
+				"SnapshotLogic",
+				"SnapshotViewer",
+				"Base64Util",
+				"TopShot"
+			]
+		}
+	}
+}
