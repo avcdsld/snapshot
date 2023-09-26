@@ -32,4 +32,4 @@ https://mirror.xyz/ara721.eth/LD7H64Y1zFthHLrT4-cZLiGZ_5PP8EesxuVp4Sfz_MM
 
 ## Viewer Demo
 
-[!['Snapshot Viewer'](https://github.com/avcdsld/snapshot/assets/10495516/4a82024f-6200-467d-b65e-b95819b40e8a)](https://youtu.be/sErAUWX6bI8)
+[![Snapshot Viewer](https://github-production-user-asset-6210df.s3.amazonaws.com/10495516/270688805-4a82024f-6200-467d-b65e-b95819b40e8a.png)](https://www.youtube.com/watch?v=sErAUWX6bI8)
