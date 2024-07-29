@@ -19,6 +19,16 @@
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
 			"key": "d2c3686da84d61c13627bdf2127866fe358165734f5470be792e6771901d2856"
+		},
+		"mainnet-account": { 
+			"address": "36b1a29d10c00c1a",
+			"key": {
+				"index": 0,
+				"signatureAlgorithm": "ECDSA_secp256k1",
+				"hashAlgorithm": "SHA2_256",
+				"type": "file",
+				"location": "./mainnet-account.key"
+			}
 		}
 	},
 	"deployments": {
@@ -29,6 +39,14 @@
 				"SnapshotViewer",
 				"Base64Util",
 				"TopShot"
+			]
+		},
+		"mainnet": {
+			"mainnet-account": [
+				"Snapshot",
+				"SnapshotLogic",
+				"SnapshotViewer",
+				"Base64Util"
 			]
 		}
 	}

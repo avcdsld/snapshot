@@ -1,15 +1,15 @@
-import NonFungibleToken from 0xf8d6e0586b0a20c7
-import MetadataViews from 0xf8d6e0586b0a20c7
-import "Snapshot"
-import "Base64Util"
+import NonFungibleToken from 0x1d7e57aa55817448
+import MetadataViews from 0x1d7e57aa55817448
+import Snapshot from 0x36b1a29d10c00c1a
+import Base64Util from 0x36b1a29d10c00c1a
 
 // The `SnapshotViewer` contract is a sample implementation of the `IViewer` struct interface.
 //
-pub contract SnapshotViewer {
+access(all) contract SnapshotViewer {
 
-    pub struct BasicHTMLViewer: Snapshot.IViewer {
+    access(all) struct BasicHTMLViewer: Snapshot.IViewer {
 
-        pub fun getView(snap: &Snapshot.Snap): AnyStruct {
+        access(all) fun getView(snap: &Snapshot.Snap): AnyStruct {
             var html = "<!DOCTYPE html>\n"
             html = html.concat("<html lang=\"ja\">\n")
             html = html.concat("<head>\n")

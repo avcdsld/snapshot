@@ -33,3 +33,29 @@ https://mirror.xyz/ara721.eth/LD7H64Y1zFthHLrT4-cZLiGZ_5PP8EesxuVp4Sfz_MM
 ## Viewer Demo
 
 [![Snapshot Viewer](https://github-production-user-asset-6210df.s3.amazonaws.com/10495516/270688805-4a82024f-6200-467d-b65e-b95819b40e8a.png)](https://www.youtube.com/watch?v=sErAUWX6bI8)
+
+## Cadence 1.0 Migration 2024/07/27
+
+```sh
+sudo sh -ci "$(curl -fsSL https://raw.githubusercontent.com/onflow/flow-cli/master/install.sh)"
+flow-c1 version
+
+flow-c1 emulator
+flow-c1 deploy
+
+flow-c1 migrate stage Base64Util --network=mainnet
+flow-c1 migrate is-staged Base64Util --network=mainnet
+flow-c1 migrate is-validated Base64Util --network=mainnet
+
+flow-c1 migrate stage Snapshot --network=mainnet
+flow-c1 migrate is-staged Snapshot --network=mainnet
+flow-c1 migrate is-validated Snapshot --network=mainnet
+
+flow-c1 migrate stage SnapshotLogic --network=mainnet
+flow-c1 migrate is-staged SnapshotLogic --network=mainnet
+flow-c1 migrate is-validated SnapshotLogic --network=mainnet
+
+flow-c1 migrate stage SnapshotViewer --network=mainnet
+flow-c1 migrate is-staged SnapshotViewer --network=mainnet
+flow-c1 migrate is-validated SnapshotViewer --network=mainnet
+```

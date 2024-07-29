@@ -1,53 +1,53 @@
 import NonFungibleToken from 0xf8d6e0586b0a20c7
 import MetadataViews from 0xf8d6e0586b0a20c7
 import "Snapshot"
-import "TopShot"
+// import "TopShot"
 
 // The `SnapshotLogic` contract is a basic implementation of the `ILogic` struct interface.
 //
-pub contract SnapshotLogic {
+access(all) contract SnapshotLogic {
 
-    pub struct BasicLogic: Snapshot.ILogic {
+    access(all) struct BasicLogic: Snapshot.ILogic {
 
         // This logic retrieves NFT information for
         // the Public Capability of `NonFungibleToken.CollectionPublic` and
         // the Public Capability of `TopShot.MomentCollectionPublic`.
         //
-        pub fun getOwnedNFTs(address: Address): {String: {UInt64: Snapshot.NFTInfo}} {
+        access(all) fun getOwnedNFTs(address: Address): {String: {UInt64: Snapshot.NFTInfo}} {
             var nfts: {String: {UInt64: Snapshot.NFTInfo}} = {}
             let account = getAccount(address)
-            account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+            account.storage.forEachPublic(fun (path: PublicPath, type: Type): Bool {
 
-                let collection = account.getCapability(path).borrow<&AnyResource{NonFungibleToken.CollectionPublic}>()
+                let collection = account.capabilities.get<&{NonFungibleToken.CollectionPublic}>(path).borrow()
                 if (collection != nil) {
                     for index, id in collection!.getIDs() {
                         if index == 0 {
                             nfts[path.toString()] = {}
                         }
-                        let nft = collection!.borrowNFT(id: id)
+                        let nft = collection!.borrowNFT(id)!
                         nfts[path.toString()]!.insert(key: nft.id, self.makeNFTInfo(nft: nft, path: path))
                     }
                     return true
                 }
 
-                let topshotCollection = account.getCapability(path).borrow<&AnyResource{TopShot.MomentCollectionPublic}>()
-                if (topshotCollection != nil) {
-                    for index, id in topshotCollection!.getIDs() {
-                        if index == 0 {
-                            nfts[path.toString()] = {}
-                        }
-                        let nft = topshotCollection!.borrowNFT(id: id)
-                        nfts[path.toString()]!.insert(key: nft.id, self.makeNFTInfo(nft: nft, path: path))
-                    }
-                    return true
-                }
+                // let topshotCollection = account.capabilities.get<&TopShot.Collection>(path).borrow()
+                // if (topshotCollection != nil) {
+                //     for index, id in topshotCollection!.getIDs() {
+                //         if index == 0 {
+                //             nfts[path.toString()] = {}
+                //         }
+                //         let nft = topshotCollection!.borrowNFT(id)!
+                //         nfts[path.toString()]!.insert(key: nft.id, self.makeNFTInfo(nft: nft, path: path))
+                //     }
+                //     return true
+                // }
 
                 return true
             })
             return nfts
         }
 
-        priv fun makeNFTInfo(nft: &NonFungibleToken.NFT, path: PublicPath): Snapshot.NFTInfo {
+        access(self) fun makeNFTInfo(nft: &{NonFungibleToken.NFT}, path: PublicPath): Snapshot.NFTInfo {
             var metadata: MetadataViews.Display? = nil
             if nft.getViews().contains(Type<MetadataViews.Display>()) {
                 metadata = nft.resolveView(Type<MetadataViews.Display>())! as? MetadataViews.Display

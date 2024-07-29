@@ -3,23 +3,23 @@
 import NonFungibleToken from 0xf8d6e0586b0a20c7
 import MetadataViews from 0xf8d6e0586b0a20c7
 
-pub contract TopShot: NonFungibleToken {
+access(all) contract TopShot: NonFungibleToken {
 
-    pub var totalSupply: UInt64
-    pub event ContractInitialized()
-    pub event Withdraw(id: UInt64, from: Address?)
-    pub event Deposit(id: UInt64, to: Address?)
+    access(all) var totalSupply: UInt64
+    access(all) event ContractInitialized()
+    access(all) event Withdraw(id: UInt64, from: Address?)
+    access(all) event Deposit(id: UInt64, to: Address?)
 
-    pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
-        pub let id: UInt64
+    access(all) resource NFT: NonFungibleToken.NFT {
+        access(all) let id: UInt64
 
-        pub fun getViews(): [Type] {
+        access(all) view fun getViews(): [Type] {
             return [
                 Type<MetadataViews.Display>()
             ]
         }
 
-        pub fun resolveView(_ view: Type): AnyStruct? {
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
             switch view {
                 case Type<MetadataViews.Display>():
                     return MetadataViews.Display(
@@ -34,43 +34,43 @@ pub contract TopShot: NonFungibleToken {
         init(id: UInt64) {
             self.id = id
         }
+
+        access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
+            return <- TopShot.createEmptyCollection(nftType: Type<@TopShot.NFT>())
+        }
     }
 
-    pub resource interface MomentCollectionPublic {
-        pub fun getIDs(): [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
+    access(all) resource interface MomentCollectionPublic {
+        access(all) view fun getIDs(): [UInt64]
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?
     }
 
-    pub resource Collection: MomentCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
-        pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
+    access(all) resource Collection: MomentCollectionPublic, NonFungibleToken.Collection {
+        access(all) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
 
         init() {
             self.ownedNFTs <- {}
         }
 
-        destroy() {
-            destroy self.ownedNFTs
-        }
-
-        pub fun getIDs(): [UInt64] {
+        access(all) view fun getIDs(): [UInt64] {
             return self.ownedNFTs.keys
         }
 
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}? {
             pre {
                 self.ownedNFTs[id] != nil: "NFT does not exist in the collection!"
             }
-            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
+            return (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)
         }
 
-        pub fun borrowNFTSafe(id: UInt64): &NonFungibleToken.NFT? {
-            if let nftRef = &self.ownedNFTs[id] as &NonFungibleToken.NFT? {
+        access(all) fun borrowNFTSafe(id: UInt64): &{NonFungibleToken.NFT}? {
+            if let nftRef = &self.ownedNFTs[id] as &{NonFungibleToken.NFT}? {
                 return nftRef
             }
             return nil
         }
 
-        pub fun deposit(token: @NonFungibleToken.NFT) {
+        access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
             let token <- token as! @TopShot.NFT
             let id = token.id
             self.ownedNFTs[id] <-! token
@@ -79,17 +79,39 @@ pub contract TopShot: NonFungibleToken {
             }
         }
 
-        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
-            let nft = self.borrowNFT(id: withdrawID)
+        access(NonFungibleToken.Withdraw) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT} {
+            let nft = self.borrowNFT(withdrawID)
             let token <- self.ownedNFTs.remove(key: withdrawID)
                 ?? panic("Cannot withdraw: Moment does not exist in the collection")
             emit Withdraw(id: token.id, from: self.owner?.address)
             return <-token
         }
+
+        access(all) view fun getSupportedNFTTypes(): {Type: Bool} {
+            let supportedTypes: {Type: Bool} = {}
+            supportedTypes[Type<@TopShot.NFT>()] = true
+            return supportedTypes
+        }
+
+        access(all) view fun isSupportedNFTType(type: Type): Bool {
+            return type == Type<@TopShot.NFT>()
+        }
+
+        access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection} {
+            return <- TopShot.createEmptyCollection(nftType: Type<@TopShot.NFT>())
+        }
     }
 
-    pub fun createEmptyCollection(): @NonFungibleToken.Collection {
+    access(all) fun createEmptyCollection(nftType: Type): @{NonFungibleToken.Collection} {
         return <- create Collection()
+    }
+
+    access(all) view fun getContractViews(resourceType: Type?): [Type] {
+        return []
+    }
+
+    access(all) view fun resolveContractView(resourceType: Type?, viewType: Type): AnyStruct? {
+        return nil
     }
 
     init() {
@@ -102,7 +124,8 @@ pub contract TopShot: NonFungibleToken {
         collection.deposit(token: <- create NFT(id: 4))
         collection.deposit(token: <- create NFT(id: 5))
 
-        self.account.save(<- collection, to: /storage/MomentCollection)
-        self.account.link<&Collection{MomentCollectionPublic}>(/public/MomentCollection, target: /storage/MomentCollection)
+        self.account.storage.save(<- collection, to: /storage/MomentCollection)
+        let cap = self.account.capabilities.storage.issue<&Collection>(/storage/MomentCollection)
+        self.account.capabilities.publish(cap, at: /public/MomentCollection)
     }
 }
